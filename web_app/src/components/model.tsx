@@ -28,11 +28,12 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
   const [models, setModels] = useState<Model[]>([]);
 
   const addModel = () => {
-    const newModel: Model = {
+    const newModel = {
       id: Date.now(),
-      url: "../public/model.gltf", 
+      url: "https://quickbim.fi/hizzi.gltf", 
       position: new Vector3(0, 0, 0),
-    };
+    }
+    
     setModels((prevModels) => [...prevModels, newModel]);
   };
 
@@ -41,7 +42,7 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
     const mesh = useRef<Mesh>(null!);
   
     return (
-      <group ref={sceneRef}>
+      <group>
         {building.floors.map((f, index) => {
           const gltf = useLoader(GLTFLoader, getModelUrl(f));
 
@@ -127,10 +128,14 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
           intensity={1}
           castShadow
         />
+        <group ref={sceneRef} >
         <MeshComponent />
-        {models.map((model) => (
-          <DraggableModel key={model.id} model={model} orbitControlsRef={orbitControlsRef} />
-        ))}
+        {models.map((model) => {
+            return (
+              <DraggableModel key={model.id} model={model} floors = {building.floors} orbitControlsRef={orbitControlsRef} axis="y"/>
+            )
+          })}
+        </group>
         <OrbitControls ref={orbitControlsRef} />
         </ThreeCanvas>
       <div className="w-[250px] flex flex-col justify-center align-center">
@@ -164,7 +169,7 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
         </button>
         <button
         onClick={addModel}
-        >Add hissi</button>
+        >Add hizzi</button>
       </div>
     </div>
   );
