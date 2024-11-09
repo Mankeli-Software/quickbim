@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Canvas as ThreeCanvas, useLoader } from "@react-three/fiber";
+import { Canvas as ThreeCanvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { Mesh, Scene } from "three";
@@ -14,55 +14,42 @@ type ModelProps = {
   building: Building;
 };
 
-type MeshComponentProps = {
-  floor: Floor;
-
-  building: Building;
-
-  sceneRef: React.RefObject<Scene>;
-};
-
-export function MeshComponent({
-  floor,
-  building,
-  sceneRef,
-}: Readonly<MeshComponentProps>) {
-  const mesh = useRef<Mesh>(null!);
-
-  return (
-    <group ref={sceneRef}>
-      {building.floors.map((f, index) => {
-        const gltf = useLoader(GLTFLoader, getModelUrl(f));
-
-        const isSelected = f.id === floor.id;
-
-        useEffect(() => {
-          if (mesh.current) {
-            for (let material in gltf.materials) {
-              gltf.materials[material].opacity = isSelected ? 1 : 0.2;
-
-              gltf.materials[material].transparent = true;
-            }
-          }
-        }, [isSelected]);
-
-        return (
-          <mesh key={f.id} ref={mesh} position={[0, -index * 1.05, 0]}>
-            <primitive object={gltf.scene} />
-          </mesh>
-        );
-      })}
-    </group>
-  );
-}
-
-export function Model({ floor, building }: Readonly<ModelProps>) {
+export function Model({ floor, building }: ModelProps) {
   const { Canvas } = useQRCode();
   const sceneRef = useRef<Scene>(new Scene());
 
+  function MeshComponent() {
+    const mesh = useRef<Mesh>(null!);
+
+    return (
+      <group ref={sceneRef}>
+        {building.floors.map((f, index) => {
+          const gltf = useLoader(GLTFLoader, getModelUrl(f));
+
+          const isSelected = f.id === floor.id;
+
+          useEffect(() => {
+            if (mesh.current) {
+              for (let material in gltf.materials) {
+                gltf.materials[material].opacity = isSelected ? 1 : 0.2;
+                gltf.materials[material].transparent = true;
+              }
+            }
+          }, [isSelected]);
+
+          return (
+            <mesh key={f.id} ref={mesh} position={[0, -index * 1.05, 0]}>
+              <primitive object={gltf.scene} />
+            </mesh>
+          );
+        })}
+      </group>
+    );
+  }
+
   const exportGLTF = () => {
     const originalOpacities = new Map();
-
+  
     // Store original opacities and set all materials to full opacity
     sceneRef.current.traverse((node) => {
       if (node instanceof Mesh) {
@@ -74,7 +61,7 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
         node.material.transparent = false;
       }
     });
-
+  
     const exporter = new GLTFExporter();
     exporter.parse(
       sceneRef.current,
@@ -86,7 +73,7 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
         link.href = url;
         link.download = "combined_model.gltf";
         link.click();
-
+  
         // Restore original opacities
         originalOpacities.forEach((value, node) => {
           node.material.opacity = value.opacity;
@@ -95,13 +82,13 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
       },
       () => {
         console.error("Failed to export model");
-
+  
         // Restore original opacities in case of failure
         originalOpacities.forEach((value, node) => {
           node.material.opacity = value.opacity;
           node.material.transparent = value.transparent;
         });
-      }
+      },
     );
   };
   return (
@@ -120,8 +107,7 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
           intensity={1}
           castShadow
         />
-        <MeshComponent floor={floor} building={building} sceneRef={sceneRef} />
-
+        <MeshComponent />
         <OrbitControls />
       </ThreeCanvas>
       <div className="w-[250px] flex flex-col justify-center align-center">
