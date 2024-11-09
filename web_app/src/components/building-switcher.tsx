@@ -24,11 +24,11 @@ export function BuildingSwitcher({
   buildings,
   activeBuildingId,
   onSelectBuilding,
-}: {
+}: Readonly<{
   buildings:Building[]
   activeBuildingId: string;
   onSelectBuilding: (buildingId: string) => void;
-}) {
+}>) {
   const { isMobile } = useSidebar()
 
   const activeBuilding = buildings.find((b) => b.id === activeBuildingId);

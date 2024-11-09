@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, BuildingIcon, Minus, Plus } from "lucide-react";
+import {  BuildingIcon, Minus, Plus } from "lucide-react";
 
 import {
   Sidebar,
@@ -36,11 +36,8 @@ export function AppSidebar({
   onSelectFloor,
   onAddFloor,
   onClearAll,
-}: AppSidebarProps) {
+}: Readonly<AppSidebarProps>) {
   const activeBuilding = buildings.find((b) => b.id === activeBuildingId);
-  const activeFloor = activeBuilding?.floors.find(
-    (f) => f.id === activeFloorId
-  );
 
   return (
     <Sidebar>

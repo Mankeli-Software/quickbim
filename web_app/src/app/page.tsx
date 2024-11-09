@@ -8,7 +8,6 @@ import { useFilePicker } from "use-file-picker";
 import { BlobServiceClient, ContainerClient } from "@azure/storage-blob";
 import LoadingOverlay from "@/components/loading_overlay";
 import { Floor } from "@/types";
-import { add } from "three/webgpu";
 
 export default function Home() {
   const [buildings, setBuildings] = React.useState([
@@ -89,7 +88,7 @@ export default function Home() {
     // Data is like this: "('7HQA9Q', '54d6ef30f1f09c33ca8780a4945bb7c56b869b4952b16bd3e0fc74fd', False)"
     // The first value is id and second is hash, parse those
     const regex = /\('([^']+)', '([^']+)',/;
-    const match = data.match(regex);
+    const match = RegExp(regex).exec(data);
 
     if (!match) {
       console.error("Failed to parse data");
@@ -99,7 +98,7 @@ export default function Home() {
     const hash = match![2];
     console.log(`ID: ${id}, Hash: ${hash}`);
 
-    const createAndTransformResult = await fetch(
+    await fetch(
       `http://api.quickbim.fi:8000/?func=createandtransform&id=${id}&oformat=.gltf&hash=${hash}&iformat=.${extension}`,
       {
         method: "PUT",
@@ -197,7 +196,7 @@ export default function Home() {
     console.log(json);
 
     for (const process of json) {
-      const processResult = await fetch(
+      await fetch(
         `http://api.quickbim.fi:8000/?func=remove&id=${process.in}`,
         {
           method: "POST",
