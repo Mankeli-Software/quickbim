@@ -1,26 +1,45 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Canvas as ThreeCanvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { Mesh, Scene } from "three";
+import { Mesh, Scene, Vector3 } from "three";
 import { useQRCode } from "next-qrcode";
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { Building, Floor, getModelUrl } from "@/types";
+import DraggableModel from "./ui/DraggableModel";
 
 type ModelProps = {
   floor: Floor;
   building: Building;
 };
-
-export function Model({ floor, building }: ModelProps) {
+interface Model {
+  id: number;
+  url: string;
+  position: Vector3;
+}
+  
+export function Model({ floor, building }: Readonly<ModelProps>) {
   const { Canvas } = useQRCode();
   const sceneRef = useRef<Scene>(new Scene());
 
+  const orbitControlsRef = useRef(null);
+  const [models, setModels] = useState<Model[]>([]);
+
+  const addModel = () => {
+    const newModel: Model = {
+      id: Date.now(),
+      url: "../public/model.gltf", 
+      position: new Vector3(0, 0, 0),
+    };
+    setModels((prevModels) => [...prevModels, newModel]);
+  };
+
+
   function MeshComponent() {
     const mesh = useRef<Mesh>(null!);
-
+  
     return (
       <group ref={sceneRef}>
         {building.floors.map((f, index) => {
@@ -91,6 +110,7 @@ export function Model({ floor, building }: ModelProps) {
       },
     );
   };
+  
   return (
     <div className="flex flex-row w-full h-full">
       <ThreeCanvas
@@ -108,8 +128,11 @@ export function Model({ floor, building }: ModelProps) {
           castShadow
         />
         <MeshComponent />
-        <OrbitControls />
-      </ThreeCanvas>
+        {models.map((model) => (
+          <DraggableModel key={model.id} model={model} orbitControlsRef={orbitControlsRef} />
+        ))}
+        <OrbitControls ref={orbitControlsRef} />
+        </ThreeCanvas>
       <div className="w-[250px] flex flex-col justify-center align-center">
         <Canvas
           text={getModelUrl(floor)}
@@ -139,6 +162,9 @@ export function Model({ floor, building }: ModelProps) {
         >
           Export Combined GLTF
         </button>
+        <button
+        onClick={addModel}
+        >Add hissi</button>
       </div>
     </div>
   );
