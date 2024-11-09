@@ -71,10 +71,10 @@ export default function Home() {
   );
 
   const onAddFloor = async (file: File, extension: string) => {
-    // Make API call to POST http://40.68.139.47/?func=create
+    // Make API call to POST http://api.quickbim.fi/?func=create
     setIsLoading(true);
     const createFileResult = await fetch(
-      "http://40.68.139.47:8000/?func=create",
+      "http://api.quickbim.fi:8000/?func=create",
       {
         method: "POST",
       }
@@ -100,7 +100,7 @@ export default function Home() {
     console.log(`ID: ${id}, Hash: ${hash}`);
 
     const createAndTransformResult = await fetch(
-      `http://40.68.139.47:8000/?func=createandtransform&id=${id}&oformat=.gltf&hash=${hash}&iformat=.${extension}`,
+      `http://api.quickbim.fi:8000/?func=createandtransform&id=${id}&oformat=.gltf&hash=${hash}&iformat=.${extension}`,
       {
         method: "PUT",
         headers: {
@@ -111,7 +111,7 @@ export default function Home() {
     );
 
     const pollStatus = async () => {
-      const response = await fetch(`http://40.68.139.47:8000/?func=processes`, {
+      const response = await fetch(`http://api.quickbim.fi:8000/?func=processes`, {
         method: "GET",
       });
       const data = await response.json();
@@ -124,7 +124,7 @@ export default function Home() {
         console.log("Process completed:", process);
 
         const objectResponse = await fetch(
-          `http://40.68.139.47/?func=object&id=${id}&oformat=.gltf`,
+          `http://api.quickbim.fi/?func=object&id=${id}&oformat=.gltf`,
           {
             method: "GET",
           }
@@ -182,7 +182,7 @@ export default function Home() {
 
   const onClearAll = async () => {
     const processesResult = await fetch(
-      "http://40.68.139.47:8000/?func=processes",
+      "http://api.quickbim.fi:8000/?func=processes",
       {
         method: "GET",
         mode: "cors",
@@ -198,7 +198,7 @@ export default function Home() {
 
     for (const process of json) {
       const processResult = await fetch(
-        `http://40.68.139.47:8000/?func=remove&id=${process.in}`,
+        `http://api.quickbim.fi:8000/?func=remove&id=${process.in}`,
         {
           method: "POST",
         }

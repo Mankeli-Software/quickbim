@@ -48,6 +48,20 @@ export function Model({ floor, building }: ModelProps) {
   }
 
   const exportGLTF = () => {
+    const originalOpacities = new Map();
+  
+    // Store original opacities and set all materials to full opacity
+    sceneRef.current.traverse((node) => {
+      if (node instanceof Mesh) {
+        originalOpacities.set(node, {
+          opacity: node.material.opacity,
+          transparent: node.material.transparent,
+        });
+        node.material.opacity = 1;
+        node.material.transparent = false;
+      }
+    });
+  
     const exporter = new GLTFExporter();
     exporter.parse(
       sceneRef.current,
@@ -59,13 +73,24 @@ export function Model({ floor, building }: ModelProps) {
         link.href = url;
         link.download = "combined_model.gltf";
         link.click();
+  
+        // Restore original opacities
+        originalOpacities.forEach((value, node) => {
+          node.material.opacity = value.opacity;
+          node.material.transparent = value.transparent;
+        });
       },
-      ()=>{
+      () => {
         console.error("Failed to export model");
+  
+        // Restore original opacities in case of failure
+        originalOpacities.forEach((value, node) => {
+          node.material.opacity = value.opacity;
+          node.material.transparent = value.transparent;
+        });
       },
     );
   };
-
   return (
     <div className="flex flex-row w-full h-full">
       <ThreeCanvas
