@@ -22,6 +22,10 @@ export default function Home() {
         //   title: "Floor 1",
         // },
         {
+          id: "CNX50A",
+          title: "Floor 3",
+        },
+        {
           id: "2DSMWK",
           title: "Floor 2",
         },

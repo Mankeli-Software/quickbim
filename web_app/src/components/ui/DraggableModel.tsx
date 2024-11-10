@@ -19,14 +19,15 @@ interface DraggableModelProps {
 }
 
 const DraggableModel: React.FC<DraggableModelProps> = ({ model, orbitControlsRef, axis, floors }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   const gltf = useLoader(GLTFLoader, model.url);
   const { camera, gl } = useThree();
   const initialPosition = useRef<THREE.Vector3>(model.position.clone());
+  const [position, setPosition] = React.useState(model.position);
 
   useEffect(() => {
     const dragControls = new DragControls(
-      [meshRef.current as THREE.Object3D],
+      [groupRef.current as THREE.Object3D],
       camera,
       gl.domElement
     );
@@ -34,12 +35,12 @@ const DraggableModel: React.FC<DraggableModelProps> = ({ model, orbitControlsRef
     const handleDragStart = () => {
         if (orbitControlsRef.current) orbitControlsRef.current.enabled = false;
         // Store the initial position of the object at the start of the drag
-        if (meshRef.current) {
-          initialPosition.current.copy(meshRef.current.position);
+        if (groupRef.current) {
+          initialPosition.current.copy(groupRef.current.position);
         }
       };
       const handleDrag = (event: THREE.Event & { object: THREE.Object3D }) => {
-        if (meshRef.current) {
+        if (groupRef.current) {
           const position = event.object.position;
   
           // Lock position to the specified axis
@@ -50,8 +51,11 @@ const DraggableModel: React.FC<DraggableModelProps> = ({ model, orbitControlsRef
           } else if (axis === "z") {
             position.z = initialPosition.current.z;
           }
-  
-          meshRef.current.position.copy(position);
+
+          groupRef.current.position.copy(position);
+
+          setPosition(position);
+
         }
       };
 
@@ -72,9 +76,9 @@ const DraggableModel: React.FC<DraggableModelProps> = ({ model, orbitControlsRef
     }, [camera, gl, orbitControlsRef]);
 
   return (
-    <group ref={meshRef}>{floors.map((f, index) => {
+    <group ref={groupRef}>{floors.map((f, index) => {
         return(
-          <mesh key={index} position={[model.position.x, model.position.y-index * 1.05, model.position.z]}>
+          <mesh key={index} position={[position.x, position.y-index * 1.05, position.z]}>
             <primitive object={gltf.scene.clone()} />
           </mesh>)
     })}</group>
