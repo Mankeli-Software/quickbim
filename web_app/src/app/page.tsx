@@ -39,7 +39,7 @@ export default function Home() {
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [activeBuildingId, setActiveBuildingId] = React.useState("1");
-  const [activeFloorId, setActiveFloorId] = React.useState("1");
+  const [activeFloorId, setActiveFloorId] = React.useState("CNX50A");
 
   const sasToken = process.env.NEXT_PUBLIC_STORAGESASTOKEN;
   const storageAccountName = process.env.NEXT_PUBLIC_STORAGERESOURCENAME;

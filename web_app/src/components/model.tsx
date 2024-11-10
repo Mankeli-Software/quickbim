@@ -27,7 +27,11 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
   const orbitControlsRef = useRef(null);
   const [models, setModels] = useState<Model[]>([]);
 
-  const addModel = () => {
+  const addOrRemove = () => {
+    if (models.length > 0) {
+      setModels([]);
+      return;
+    }
     const newModel = {
       id: Date.now(),
       url: "https://quickbim.fi/hizzi.gltf", 
@@ -70,15 +74,18 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
   const exportGLTF = () => {
     const originalOpacities = new Map();
   
-    // Store original opacities and set all materials to full opacity
+    // Store original opacities and set all materials to 0.5 opacity except for DraggableModel
     sceneRef.current.traverse((node) => {
       if (node instanceof Mesh) {
         originalOpacities.set(node, {
           opacity: node.material.opacity,
           transparent: node.material.transparent,
         });
-        node.material.opacity = 1;
-        node.material.transparent = false;
+     
+      
+        node.material.opacity = 0.5;
+        node.material.transparent = true;
+        
       }
     });
   
@@ -152,24 +159,25 @@ export function Model({ floor, building }: Readonly<ModelProps>) {
             },
           }}
         />
-        <p className="self-center">Scan to view floor in AR</p>
+        <p className="self-center m-2 text-center">Scan to view floor in AR. Requires our own app, come to our table (269) for demo.</p>
         <a
           href={getModelUrl(floor)}
           download
           target="_blank"
-          className="self-center text-blue-500 underline"
+           className="self-center mt-4 px-4 py-2 bg-blue-500 text-white rounded m-4"
         >
-          Download floor as .gltf
+          Export floor as .gltf
         </a>
         <button
           onClick={exportGLTF}
           className="self-center mt-4 px-4 py-2 bg-blue-500 text-white rounded m-4"
         >
-          Export Combined GLTF
+          Export building as .gltf
         </button>
         <button
-        onClick={addModel}
-        >Add hizzi</button>
+        onClick={addOrRemove}
+        className="self-center mt-4 px-4 py-2 bg-green-400 text-white rounded m-4"
+        >{models.length === 0 ? 'Add elevator' : 'Remove elevator'}</button>
       </div>
     </div>
   );

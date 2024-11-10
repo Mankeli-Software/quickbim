@@ -78,8 +78,8 @@ const DraggableModel: React.FC<DraggableModelProps> = ({ model, orbitControlsRef
   return (
     <group ref={groupRef}>{floors.map((f, index) => {
         return(
-          <mesh key={index} position={[position.x, position.y-index * 1.05, position.z]}>
-            <primitive object={gltf.scene.clone()} />
+          <mesh key={index} position={[position.x, position.y-index * 1.05, position.z]} userData={{id: 'hizzi'}}>
+            <primitive object={gltf.scene.clone()} userData={{id: 'hizzi'}}/>
           </mesh>)
     })}</group>
     

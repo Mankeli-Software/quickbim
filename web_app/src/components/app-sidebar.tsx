@@ -51,11 +51,11 @@ export function AppSidebar({
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Floors</SidebarGroupLabel>
-          <SidebarGroupAction title="Add Project" onClick={onAddFloor}>
+          {/* <SidebarGroupAction title="Add Project" onClick={onAddFloor}>
             <div>
               <Plus /> <span className="sr-only">Add Floor</span>
             </div>
-          </SidebarGroupAction>
+          </SidebarGroupAction> */}
           <SidebarGroupContent>
             <SidebarMenu>
               {activeBuilding?.floors.map((floor) => (
@@ -72,17 +72,19 @@ export function AppSidebar({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <p className="mb-2">New floors can be added by uploading photo of floorplan and we'll automatically create the 3d model.</p>
+              <p>Adding new floors is disabled due to too heavy server load. Come to our table (269) for demo.</p>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenuButton asChild onClick={onClearAll}>
+        {/* <SidebarMenuButton asChild onClick={onClearAll}>
           <div>
             <Minus />
             <span>Clear all</span>
           </div>
-        </SidebarMenuButton>
+        </SidebarMenuButton> */}
       </SidebarFooter>
     </Sidebar>
   );
