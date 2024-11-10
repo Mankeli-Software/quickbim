@@ -1,5 +1,7 @@
 # QuickBim
 
+![diagram](https://github.com/Mankeli-Software/quickbim/blob/e85017625547862b71dd1a2ce6c17ad37e1eea5c/docs/diagram.png?raw=true)
+
 ### TL:DR
 Creating 3D models from pictures in seconds using ML, try out the web app https://quickbim.fi/ or come see our live demo at table 269
 
